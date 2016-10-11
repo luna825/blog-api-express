@@ -3,5 +3,5 @@ import loginRouter from './auth'
 
 export default (app) => {
   app.use('/users',userRouter)
-  app.use('/login', loginRouter)
+  app.use('/auth', loginRouter)
 }

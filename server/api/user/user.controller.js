@@ -1,7 +1,7 @@
 import User from '../../model/user.model'
 
 
-//
+//后台获取用户数据
 export function getUserList(req, res, next){
   const currentPage = parseInt(req.query.currentPage > 0) ? parseInt(req.query.currentPage) : 1;
   const itemsPerPage = parseInt(req.query.itemsPerPage > 0) ? parseInt(req.query.itemsPerPage) : 10;
