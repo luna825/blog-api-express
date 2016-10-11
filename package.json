@@ -1,0 +1,42 @@
+{
+  "name": "blog-api-express",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "NODE_ENV=development nodemon ./server/app.js --exec babel-node"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/luna825/blog-api-express.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/luna825/blog-api-express/issues"
+  },
+  "homepage": "https://github.com/luna825/blog-api-express#readme",
+  "dependencies": {
+    "body-parser": "^1.15.2",
+    "composable-middleware": "^0.3.0",
+    "compression": "^1.6.2",
+    "crypto": "^0.0.3",
+    "express": "^4.14.0",
+    "express-jwt": "^5.1.0",
+    "jsonwebtoken": "^7.1.9",
+    "method-override": "^2.3.6",
+    "mongoose": "^4.6.3",
+    "passport": "^0.3.2"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.16.0",
+    "babel-core": "^6.17.0",
+    "babel-preset-latest": "^6.16.0",
+    "babel-preset-stage-0": "^6.16.0",
+    "babel-preset-stage-3": "^6.17.0",
+    "errorhandler": "^1.4.3",
+    "nodemon": "^1.11.0"
+  }
+}
