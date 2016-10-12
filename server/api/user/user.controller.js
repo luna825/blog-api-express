@@ -4,7 +4,6 @@ import mongoose from 'mongoose'
 const User = mongoose.model('User')
 const Logs = mongoose.model('Logs')
 
-const NICKNAME_REGEXP = /^[(\u4e00-\u9fa5)0-9a-zA-Z\_\s@]+$/;
 const EMAIL_REGEXP = /^(\w)+(\.\w+)*@(\w)+((\.\w+)+)$/;
 
 
@@ -19,8 +18,8 @@ export function getMe(req, res){
 
 //后台获取用户数据
 export function getUserList(req, res, next){
-  const currentPage = parseInt(req.query.currentPage > 0) ? parseInt(req.query.currentPage) : 1;
-  const itemsPerPage = parseInt(req.query.itemsPerPage > 0) ? parseInt(req.query.itemsPerPage) : 10;
+  const currentPage = parseInt(req.query.currentPage) > 0 ? parseInt(req.query.currentPage) : 1;
+  const itemsPerPage = parseInt(req.query.itemsPerPage) > 0 ? parseInt(req.query.itemsPerPage) : 10;
   const startRow = (currentPage - 1) * itemsPerPage;
 
   let sortName = String(req.query.sortName) || 'create'

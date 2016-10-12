@@ -11,7 +11,7 @@ const request = Request(app)
 const should = Should()
 
 describe('test/api/user', ()=>{
-  let token,mockUserId,mockAdminId,mockNickname,mockUpdateNickName,mockAdminNickname;
+  let token,mockUserId,mockAdminId,mockEmail,mockUpdateNickName,mockAdminNickname;
 
   before((done)=>{
 
@@ -19,10 +19,11 @@ describe('test/api/user', ()=>{
 
       const user = await authHelper.createUser('admin')
       mockAdminId = user._id
-      mockNickname = user.nickname
+      mockEmail = user.email
       token = await authHelper.getToken(request, user.email)
       done();
     })().catch(err => console.log(err))
+    
 
   });
 
@@ -33,12 +34,12 @@ describe('test/api/user', ()=>{
       await Logs.remove()
       done()
     })()
+    
 
   })
 
   describe('post /users/addUser', ()=>{
 
-    mockNickname = '呢称' + new Date().getTime();
 
     it('should when not email return error',(done)=>{
       request.post('/users/addUser')
@@ -80,7 +81,83 @@ describe('test/api/user', ()=>{
         })
     })
 
+    it('should return new user',(done)=>{
+      request.post('/users/addUser')
+        .set('Authorization','Bearer ' + token)
+        .send({
+          email:'test' + new Date().getTime() + '@test.com',
+          password:'test'
+        })
+        .expect(200)
+        .end((err, res)=>{
+          if (err) { done (err) }
+          should.exist(res.body)
+          res.body.user_id.should.be.a('string');
+          res.body.success.should.to.be.true
+          done()
+        })
+    })
+
+
+    it('should same email return error',(done)=>{
+      request.post('/users/addUser')
+        .set('Authorization','Bearer ' + token)
+        .send({
+          email:mockEmail,
+          password:'test'
+        })
+        .expect(500)
+        .end((err, res)=>{
+          if (err) { done (err) }
+          should.exist(res.error)
+          res.error.text.should.equal('email is used!')
+          done()
+        })
+    })
+
+  })
+
+  describe('get /users/getUserList',()=>{
+
+    it('should return a list', (done)=>{
+      request.get('/users/getUserList')
+        .set('Authorization','Bearer ' + token)
+        .query({
+          itemsPerPage:1,
+        })
+        .expect(200)
+        .expect('Content-Type', /json/)
+        .end((err, res)=>{
+
+          if(err) { done(err) }
+
+          res.body.data.should.to.have.length.above(0)
+          res.body.data.length.should.equal(1)
+          res.body.count.should.to.be.above(0)
+
+          done()
+        })
+    })
+  })
+
+  describe('get /users/getMe',()=>{
+
+    it('should return user info', (done)=>{
+      request.get('/users/getMe')
+        .set('Authorization','Bearer ' + token)
+        .expect(200)
+        .expect('Content-Type', /json/)
+        .end((err, res)=>{
+
+          if(err) { done(err) }
+          res.body.should.exist;
+          res.body.email.should.equal(mockEmail)
+          res.body.nickname.should.to.be.a('string')
+
+          done()
+        })
+    })
   })
 
 
-})
+})                                                                                                                                                                                          
