@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "NODE_ENV=test mocha --compilers js:babel-core/register --require babel-polyfill --recursive ",
     "dev": "NODE_ENV=development nodemon ./server/app.js --exec babel-node"
   },
   "repository": {
@@ -37,7 +37,10 @@
     "babel-preset-latest": "^6.16.0",
     "babel-preset-stage-0": "^6.16.0",
     "babel-preset-stage-3": "^6.17.0",
+    "chai": "^3.5.0",
     "errorhandler": "^1.4.3",
-    "nodemon": "^1.11.0"
+    "mocha": "^3.1.2",
+    "nodemon": "^1.11.0",
+    "supertest": "^2.0.0"
   }
 }

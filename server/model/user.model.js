@@ -64,16 +64,16 @@ UserSchema.virtual('token')
     }
   })
 
-UserSchema.path('nickname')
+UserSchema.path('email')
   .validate(async function(value, cb){
       let self = this;
-      let user = await this.constructor.findOne({nickname: value}).exec()
+      let user = await this.constructor.findOne({email: value}).exec()
       if (user) {
         if (self.id === user.id){ return cb(true) }
         cb(false)
       }
       cb(true)
-    }, 'nickname is used!')
+    }, 'email is used!')
 
 UserSchema.methods = {
   makeSalt: function(){
@@ -96,5 +96,7 @@ UserSchema.methods = {
 }
 
 UserSchema.set('toObject', { virtuals: true });
-export default mongoose.model('User', UserSchema);
+const User = mongoose.model('User', UserSchema);
+
+module.exports = User
 

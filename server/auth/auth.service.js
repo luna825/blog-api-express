@@ -34,10 +34,12 @@ export function isAuthenticated(){
             next();
           })
           .use((req, res, next)=>{
+
             (async function(){
               const user = await User.findById(req.user._id).exec()
+
               if(!user){
-                return res.status(401).send
+                return res.status(401).send()
               }
               req.user = user
               next()

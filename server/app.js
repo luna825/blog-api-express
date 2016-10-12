@@ -6,15 +6,16 @@ import mongoose from 'mongoose'
 import path from 'path'
 import fs from 'fs'
 import config from './config/env'
-
-import getRoute from './routes'
+import {User, Logs} from './model'
 import getApp from './config/express'
-
+import getRoute from './routes'
 import errorHandler from 'errorhandler'
 
 //连接数据库
 mongoose.connect(config.mongo.uri, config.mongo.options);
+
 mongoose.Promise = global.Promise;
+
 
 
 if(config.seedDB) { require('./config/seed'); }
@@ -36,3 +37,5 @@ if ('development' === config.env) {
 app.listen(config.port, function () {
   console.log('Express server listening on %d, in %s mode', config.port, app.get('env'));
 });
+
+export default app
