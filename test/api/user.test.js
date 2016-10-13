@@ -11,7 +11,7 @@ const request = Request(app)
 const should = Should()
 
 describe('test/api/user', ()=>{
-  let token,mockUserId,mockAdminId,mockEmail,mockUpdateNickName,mockAdminNickname;
+  let token,mockUserId,mockAdminId,mockEmail,mockUpdateNickName,mockAdminEmail;
 
   before((done)=>{
 
@@ -19,7 +19,7 @@ describe('test/api/user', ()=>{
 
       const user = await authHelper.createUser('admin')
       mockAdminId = user._id
-      mockEmail = user.email
+      mockAdminEmail = user.email
       token = await authHelper.getToken(request, user.email)
       done();
     })().catch(err => console.log(err))
@@ -94,6 +94,7 @@ describe('test/api/user', ()=>{
           should.exist(res.body)
           res.body.user_id.should.be.a('string');
           res.body.success.should.to.be.true
+          mockUserId = res.body.user_id
           done()
         })
     })
@@ -103,7 +104,7 @@ describe('test/api/user', ()=>{
       request.post('/users/addUser')
         .set('Authorization','Bearer ' + token)
         .send({
-          email:mockEmail,
+          email:mockAdminEmail,
           password:'test'
         })
         .expect(500)
@@ -149,14 +150,105 @@ describe('test/api/user', ()=>{
         .expect('Content-Type', /json/)
         .end((err, res)=>{
 
-          if(err) { done(err) }
+          if(err) { return done(err) }
           res.body.should.exist;
-          res.body.email.should.equal(mockEmail)
+          res.body.email.should.equal(mockAdminEmail)
           res.body.nickname.should.to.be.a('string')
 
           done()
         })
     })
+  })
+
+
+  describe('put /users/updateUser/:id', ()=>{
+
+    mockUpdateNickName = 'nick' + new Date().getTime();
+
+    it('should when no nickname return error', (done)=>{
+
+      request.put('/users/updateUser/' + mockUserId )
+        .set('Authorization','Bearer ' + token)
+        .send({
+          status:2,
+          newPassword:'nick'
+        })
+        .expect(422)
+        .end((err, res)=>{
+          if (err) return done(err)
+          res.body.err_msg.should.equal('呢称不能为空')
+          done()
+        })
+    })
+
+    it('should when nick error return error', (done)=>{
+
+      request.put('/users/updateUser/' + mockUserId )
+        .set('Authorization','Bearer ' + token)
+        .send({
+          nickname:'jac^^%%',
+          status:2
+        })
+        .expect(422)
+        .end((err, res)=>{
+          if (err) return done(err)
+          res.body.err_msg.should.equal('呢称不合法')
+          done()
+        })
+    })
+
+    it('should return update user',(done)=>{
+
+      request.put('/users/updateUser/' + mockUserId )
+        .set('Authorization','Bearer ' + token)
+        .send({
+          nickname:mockUpdateNickName,
+          status:2,
+          newPassword:'jack'
+        })
+        .expect(200)
+        .expect('Content-Type', /json/)
+        .end((err, res)=>{
+          res.body.success.should.to.be.true;
+          done();
+        })
+    })
+
+  })
+
+  describe('del /users/delete/:id', ()=>{
+
+    it('should delete self return err', (done)=>{
+      request.delete('/users/delete/' + mockAdminId)
+        .set('Authorization','Bearer ' + token)
+        .expect(403)
+        .expect('Content-Type', /json/)
+        .end((err, res)=>{
+          if(err) return done(err)
+          res.body.message.should.equal('不能删除自己已登录帐号')
+          done()
+        })
+    })
+
+    it('should if userId error return error', (done)=>{
+      request.delete('/users/delete/dddddd')
+        .set('Authorization','Bearer ' + token)
+        .expect(500, done)
+    })
+
+    it('should delete success return true', (done)=>{
+      request.delete('/users/delete/' + mockUserId)
+        .set('Authorization','Bearer ' + token)
+        .expect(200)
+        .expect('Content-Type', /json/)
+        .end((err, res)=>{
+          if(err) return done(err);
+          res.body.success.should.to.be.true;
+          done()
+        })
+    })
+
+
   })
 
 

@@ -1,12 +1,12 @@
 import Logs from '../../model/logs.model'
 
 export function getLogsList(req, res, next){
-  const currentPage = parseInt(req.query.currentPage > 0) ? parseInt(req.query.currentPage) : 1;
-  const itemsPerPage = parseInt(req.query.itemsPerPage > 0) ? parseInt(req.query.itemsPerPage) : 10;
+  const currentPage = parseInt(req.query.currentPage) > 0 ? parseInt(req.query.currentPage) : 1;
+  const itemsPerPage = parseInt(req.query.itemsPerPage) > 0 ? parseInt(req.query.itemsPerPage) : 10;
   const startRow = (currentPage - 1) * itemsPerPage;
 
   let sortName = String(req.query.sortName) || 'create'
-  if (req.query.sortOrder === false){
+  if (req.query.sortOrder === 'false'){
     sortName = '-' + sortName
   }
 
