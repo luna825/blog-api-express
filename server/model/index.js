@@ -1,2 +1,5 @@
 export User from './user.model'
 export Logs from './logs.model'
+export TagCategory from './tag.category.model'
+export Tag from './tag.model'
+export Article from './article.model'

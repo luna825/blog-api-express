@@ -14,4 +14,5 @@ export default (app)=>{
   app.use(bodyParser.json());
   app.use(methodOverride());
   app.use(passport.initialize())
+  app.use(express.static(path.join(config.root,'public')))
 }
