@@ -13,6 +13,8 @@ const request = Request(app)
 describe('test/api/article', ()=>{
 
   let token,mockAdminId,mockAdminEmail,mockArticleId;
+  const mockTagId = '55e127401cfddd2c4be93f6b';
+  const mockTagIds = ['55e127401cfddd2c4be93f6b','55e127401cfddd2c4be93f7c'];
 
   before((done)=>{
     (async function(){
@@ -72,7 +74,8 @@ describe('test/api/article', ()=>{
         .send({
           title:'测试文章标题' + new Date().getTime(),
           content:'测试文章内容![enter image description here](http://upload.jackhu.top/test/111.png "enter image title here")',
-          status:1
+          status:1,
+          tags:mockTagIds
         })
         .expect(200)
         .end((err, res)=>{
@@ -128,6 +131,87 @@ describe('test/api/article', ()=>{
   })
 
 
+  describe('put /article/:id',()=>{
+
+    it('should no title return err', (done)=>{
+      request.put('/article/' + mockArticleId)
+        .set('Authorization', 'Bearer ' + token)
+        .send({
+          content:'测试文章内容!',
+          status:1
+        })
+        .expect(422)
+        .end((err, res)=>{
+          expect(res.body.err_msg).be.equal('标题不能为空');
+          done();
+        })
+    })
+
+    it('should no content return err', (done)=>{
+      request.put('/article/' + mockArticleId)
+        .set('Authorization', 'Bearer ' + token)
+        .send({
+          title:'测试文章内容!',
+          status:1
+        })
+        .expect(422)
+        .end((err, res)=>{
+          expect(res.body.err_msg).be.equal('内容不能为空');
+          done();
+        })
+    })
+
+    it('should return update article', (done)=>{
+
+      request.put('/article/' + mockArticleId)
+        .set('Authorization', 'Bearer ' + token)
+        .send({
+          _id:334343434,
+          title:'更新的标题' + new Date().getTime(),
+          content:'更新的文章内容![enter image description here](http://upload.jackhu.top/test/111.png "enter image title here")',
+          status:1,
+          isRePub:true,
+        })
+        .expect(200)
+        .end((err, res)=>{
+          if (err) return done(err);
+          expect(res.body.success).to.be.true;
+          expect(res.body.article_id).to.be.string;
+          expect(res.body.article_id).be.equal(mockArticleId)
+          done();
+        })
+
+    })
+
+  })
+
+  describe('get /article/getFrontArticleList', ()=>{
+    it('should return a blog list', (done)=>{
+      request.get('/article/getFrontArticleList')
+        .expect('Content-Type', /json/)
+        .expect(200)
+        .end((err, res)=>{
+          if (err) return done(err);
+          expect(res.body.data).to.be.not.empty
+          done()
+        })
+    })
+    it('should when has tagId return list', (done)=>{
+      request.get('/article/getFrontArticleList')
+        .query({
+          tagId: mockTagId
+        })
+        .expect(200)
+        .end((err, res)=>{
+          if (err) return done(err);
+          expect(res.body.data).to.be.not.empty
+          done()
+        })
+    })
+
+  })
+
+
   describe('delete /article/:id',()=>{
 
     it('should when id err return err', (done)=>{
@@ -144,9 +228,6 @@ describe('test/api/article', ()=>{
           expect(res.body.success).to.be.true;
           done()
         })
-
-
-
     })
   })
 

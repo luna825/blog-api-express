@@ -16,9 +16,16 @@ const storage = multer.diskStorage({
 })
 const upload = multer({storage});
 
+//后台
 router.post('/uploadImage', auth.hasRole('admin'), upload.single('file'), controller.uploadImage);
 router.post('/addArticle', auth.hasRole('admin'), controller.addArticle)
 router.get('/getArticleList', auth.hasRole('admin'), controller.getArticleList)
 router.delete('/:id', auth.hasRole('admin'), controller.destroy);
+router.put('/:id', auth.hasRole('admin'), controller.updateArticle);
+
+
+// front
+router.get('/getFrontArticleList', controller.getFrontArticleList)
+
 
 export default router

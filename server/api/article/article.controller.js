@@ -67,3 +67,61 @@ export function destroy(req, res, next){
     }
   })();
 }
+
+//更新blog
+export function updateArticle(req, res, next){
+  const id = req.params.id
+  if (req.body._id){
+    delete req.body._id
+  }
+  const content = req.body.content;
+  const title = req.body.title;
+  let err_msg;
+  if (!title){
+    err_msg = "标题不能为空";
+  }else if(!content){
+    err_msg = "内容不能为空";
+  }
+
+  if(err_msg){
+    res.status(422).send({err_msg});
+  }
+
+  req.body.images = extractImage(content);
+  req.body.updated = new Date();
+  if(req.body.isRePub){
+    req.body.publish_time = new Date()
+  }
+
+  (async function(){
+    const article = await Article.findByIdAndUpdate(id, req.body, {new:true})
+    return res.status(200).json({success:true, article_id:article.id})
+  })().catch(err => next(err))
+
+}
+
+//前台获取blog列表
+export function getFrontArticleList(req, res, next){
+  const currentPage = parseInt(req.query.currentPage) > 0 ? parseInt(req.query.currentPage) : 1;
+  const itemsPerPage = parseInt(req.query.itemsPerPage) > 0 ? parseInt(req.query.itemsPerPage) : 10;
+  const startRow = (currentPage - 1) * itemsPerPage;
+
+  let sortName = String(req.query.sortName) || 'publish_time'
+  if (req.query.sortOrder === 'false'){
+    sortName = '-' + sortName;
+  }
+
+  let condition = {status:{$gt:0}};
+  if (req.query.tagId){
+    let tagId = String(req.query.tagId)
+    condition = {...condition, tags:{$elemMatch:{ $eq: tagId }}}
+  }
+
+  (async function(){
+    const articles = await Article.find(condition).skip(startRow).limit(itemsPerPage).sort(sortName).exec()
+    return res.status(200).json({data:articles})
+
+  })().catch(err=>{
+    next(err)
+  })
+}
