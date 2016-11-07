@@ -66,3 +66,5 @@ ArticleSchema.virtual('info')
   })
 
 const Article = mongoose.model('Article', ArticleSchema)
+
+export default Article

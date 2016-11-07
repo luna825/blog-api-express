@@ -17,5 +17,8 @@ const storage = multer.diskStorage({
 const upload = multer({storage});
 
 router.post('/uploadImage', auth.hasRole('admin'), upload.single('file'), controller.uploadImage);
+router.post('/addArticle', auth.hasRole('admin'), controller.addArticle)
+router.get('/getArticleList', auth.hasRole('admin'), controller.getArticleList)
+router.delete('/:id', auth.hasRole('admin'), controller.destroy);
 
 export default router
