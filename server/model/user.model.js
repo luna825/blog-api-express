@@ -13,6 +13,10 @@ const UserSchema = new Schema({
     default: 'local'
   },
   hashedPassword: String,
+  likeList: [{
+    type: Schema.Types.ObjectId,
+    ref: 'Article'
+  }],
   salt: String,
   role:{
     type: String,

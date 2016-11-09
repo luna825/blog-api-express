@@ -52,7 +52,7 @@ const ArticleSchema  = new Schema({
 })
 
 ArticleSchema.virtual('info')
-  .get(()=>{
+  .get(function(){
     return {
     '_id': this._id,
     'title': this.title,

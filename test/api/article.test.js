@@ -208,7 +208,72 @@ describe('test/api/article', ()=>{
           done()
         })
     })
+    it('should when has tagId return count', (done)=>{
+      request.get('/article/getFrontArticleCount')
+        .query({
+          tagId: mockTagId
+        })
+        .expect(200)
+        .end((err, res)=>{
+          if (err) return done(err);
+          expect(res.body.success).to.be.true;
+          expect(res.body.count).be.equal(1)
+          done()
+        })
+    })
 
+  })
+
+  describe('get /article/:id/getFrontArticle', ()=>{
+    it('should return article info', (done)=>{
+      request.get('/article/' + mockArticleId + '/getFrontArticle')
+        .expect(200)
+        .end((err, res)=>{
+          if (err) return done(err);
+          expect(res.body.data._id).be.equal(mockArticleId)
+          expect(res.body.data.visit_count).be.equal(2)
+          done()
+        })
+    })
+  })
+
+  describe('put /article/:id/toggleLike',()=>{
+    it('should add like return success', (done)=>{
+      request.put('/article/' + mockArticleId + '/toggleLike')
+        .set('Authorization', 'Bearer ' + token)
+        .expect(200)
+        .end((err, res)=>{
+          if (err) return done(err);
+          expect(res.body.success).to.be.true;
+          expect(res.body.count).be.equal(2)
+          expect(res.body.isLike).to.be.true;
+          done()
+        })
+    })
+    it('should when second toggle like return success', (done)=>{
+      request.put('/article/' + mockArticleId + '/toggleLike')
+        .set('Authorization', 'Bearer ' + token)
+        .expect(200)
+        .end((err, res)=>{
+          if (err) return done(err);
+          expect(res.body.success).to.be.true;
+          expect(res.body.count).be.equal(1)
+          expect(res.body.isLike).to.be.false;
+          done()
+        })
+    })
+    it('should when third return success', (done)=>{
+      request.put('/article/' + mockArticleId + '/toggleLike')
+        .set('Authorization', 'Bearer ' + token)
+        .expect(200)
+        .end((err, res)=>{
+          if (err) return done(err);
+          expect(res.body.success).to.be.true;
+          expect(res.body.count).be.equal(2)
+          expect(res.body.isLike).to.be.true;
+          done()
+        })
+    })
   })
 
 

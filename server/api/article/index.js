@@ -26,6 +26,11 @@ router.put('/:id', auth.hasRole('admin'), controller.updateArticle);
 
 // front
 router.get('/getFrontArticleList', controller.getFrontArticleList)
+router.get('/getFrontArticleCount', controller.getFrontArticleCount)
+router.get('/:id/getFrontArticle', controller.getFrontArticle)
+
+//user like
+router.put('/:id/toggleLike',auth.isAuthenticated(), controller.toggleLike);
 
 
 export default router

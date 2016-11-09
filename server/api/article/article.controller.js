@@ -1,8 +1,10 @@
 import mongoose from 'mongoose'
+import markdown from 'markdown-it'
 
 import {extractImage} from '../../util/tools'
 
-const Article = mongoose.model('Article')
+const Article = mongoose.model('Article');
+const User = mongoose.model('User');
 const Comment = mongoose.model('Comment');
 //上传图片
 export function uploadImage(req, res, next){
@@ -124,4 +126,58 @@ export function getFrontArticleList(req, res, next){
   })().catch(err=>{
     next(err)
   })
+}
+
+//前台获取文章数量
+export function getFrontArticleCount(req, res, next){
+  let condition = {status: {$gt: 0}};
+  if (req.query.tagId){
+    let tagId = String(req.query.tagId)
+    condition = {...condition, tags: {$elemMatch: {$eq: tagId }}}
+  }
+
+  (async function(){
+    const count = await Article.count();
+    return res.status(200).send({success:true, count})
+  })().catch(err => next(err))
+}
+
+//前台获取文章
+export function getFrontArticle(req, res, next){
+
+  const id = req.params.id;
+  const md = new markdown({
+    html:true
+  });
+  (async function(){
+    const article = await Article.findById(id,'-images')
+    article.content = md.render(article.content);
+    article.visit_count++;
+    await Article.findByIdAndUpdate(id, {$inc: {visit_count: 1}})
+    return res.status(200).json({data: article.info})
+  })().catch(err=>next(err))
+
+}
+
+export function toggleLike(req, res, next){
+  const aid = req.params.id;
+  const userId = req.user._id;
+  const isLike = req.user.likeList.indexOf(aid);
+
+  let conditionOne,conditionTwo,liked;
+  if(isLike !== -1){
+    conditionOne = {'$pull':{'likeList': aid }};
+    conditionTwo = {'$inc': {'like_count': -1 }};
+    liked = false;
+  }else{
+    conditionOne = {'$addToSet':{'likeList': aid}};
+    conditionTwo = {'$inc' : {'like_count': 1 }};
+    liked = true;
+  }
+
+  (async function(){
+    await User.findByIdAndUpdate(userId, conditionOne);
+    const article = await Article.findByIdAndUpdate(aid, conditionTwo, {new: true});
+    return res.status(200).json({success:true,count:article.like_count,'isLike':liked});
+  })().catch(err => next(err))
 }
