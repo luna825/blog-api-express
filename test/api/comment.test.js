@@ -137,7 +137,6 @@ describe('test/api/comment',()=>{
         .expect(200)
         .end((err, res)=>{
           expect(res.body.success).to.be.true;
-          console.log(res.body.data)
           done();
         })
     })
